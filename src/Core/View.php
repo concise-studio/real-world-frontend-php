@@ -12,7 +12,6 @@ class View
     
     
     
-    
     public function __construct(
         string $viewPath = __DIR__ . "/../View",
         string $layout = "Default"
@@ -59,6 +58,19 @@ class View
         $view = "Page/{$view}";
         
         return $this->render($view, $vars, $viewPath, $useLayout=true); 
+    }
+    
+    
+    
+    
+    
+    public function widget(string $name) : string
+    {
+        $widgetClass = "\RealWorldFrontendPhp\Widget\\{$name}";
+        $widget = new $widgetClass();
+        $content = $widget();
+        
+        return $content;
     }
     
     

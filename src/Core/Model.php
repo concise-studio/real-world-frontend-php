@@ -11,19 +11,29 @@ abstract class Model
         $this->api = $api;
     }
     
-    protected function findAllEntries(string $entity, int $limit=20, array $filters=[], $count=true)
+    public function prepareConnectionToFindAllEntries(string $entity, int $limit=20, array $filters=[])
     {
         $params = array_merge(compact("limit"), $filters);
-        $response = $this->api->execute("get", "/{$entity}", $params);
-        $entries = $response->{$entity};
+        $connection = $this->api->prepareConnection("get", $entity, $params);
+        
+        return $connection;
+    }
+    
+    public function parseFindAllEntriesResponse($response, bool $count=true)
+    {
+        $simplified = array_values((array)$response);
+        $entries = $simplified[0];
         
         if ($count) {
-            $totalProperty = $entity . "Count";
-            $total = $response->{$totalProperty};
+            if (!array_key_exists(1, $simplified)) {
+                throw new \RuntimeException("Server did not provide information about quantity");
+            }
+
+            $total = $simplified[1];
             
             return [$entries, $total];
         } else {
             return $entries;
-        }
+        }  
     }
 }

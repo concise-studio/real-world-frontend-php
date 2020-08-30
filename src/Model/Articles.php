@@ -6,8 +6,13 @@ use \RealWorldFrontendPhp\Core\Model as CoreModel;
 
 class Articles extends CoreModel
 {
-    public function findAll(int $limit = 20, array $filters = [])
+    public function prepareConnectionToFindAll(int $limit=20, array $filters=[])
     {
-        return parent::findAllEntries("articles", $limit, $filters);
+        return parent::prepareConnectionToFindAllEntries("articles", $limit, $filters);
     }
+    
+    public function parseFindAllResponse($response, $count=true)
+    {
+        return parent::parseFindAllEntriesResponse($response, $count);
+    }    
 }

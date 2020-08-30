@@ -24,11 +24,11 @@
                     <div class="article-preview">
                         <div class="article-meta">
                             <a href="/profile/<?= $article->author->username ?>">
-                                <?= $article->author->image ?>
+                                <img src="<?= $article->author->image ?>">
                             </a>
                             <div class="info">
                                 <a href="/profile/<?= $article->author->username ?>" class="author">
-                                    <?= $article->author->username // TODO: user real name ?>
+                                    <?= $article->author->username ?>
                                 </a>
                                 <span class="date"><?= date("F j, Y", strtotime($article->createdAt)) ?></span>
                             </div>
@@ -50,14 +50,14 @@
                     <p>Popular Tags</p>
 
                     <div class="tag-list">
-                        <a href="" class="tag-pill tag-default">programming</a>
-                        <a href="" class="tag-pill tag-default">javascript</a>
-                        <a href="" class="tag-pill tag-default">emberjs</a>
-                        <a href="" class="tag-pill tag-default">angularjs</a>
-                        <a href="" class="tag-pill tag-default">react</a>
-                        <a href="" class="tag-pill tag-default">mean</a>
-                        <a href="" class="tag-pill tag-default">node</a>
-                        <a href="" class="tag-pill tag-default">rails</a>
+                        <?php foreach ($tags as $tag) { ?>
+                            <a 
+                                href="/?filter[tag]=<?= urlencode($tag) ?>" 
+                                class="tag-pill tag-default"
+                            >
+                                <?= $tag ?>
+                            </a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>

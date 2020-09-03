@@ -30,13 +30,16 @@ class Cache
     public function fetch($name)
     {
         if (property_exists($this->data, $name)) {
-            return $this->data->{$name};
+            return $this->data->{$name}->value;
         }
     }
     
     public function store($name, $value) : void
     {
-        $this->data->{$name} = $value;
+        $this->data->{$name} = (object)[
+            'created' => time(),
+            'value'   => $value
+        ];
     }
     
     public function remove($name) : void
@@ -55,26 +58,31 @@ class Cache
         $this->data = new \stdClass;
         
         if (file_exists($this->file)) {
-            if ($this->isValid($this->file)) {
-                $this->data = json_decode(file_get_contents($this->file));
-            } else {
-                unlink($this->file);
-            }
+            $loaded = json_decode(file_get_contents($this->file));
+            $this->data = $this->removeExpiredItems($loaded);
         }
     }
     
-    private function isValid(string $file)
+    private function removeExpiredItems(\stdClass $data): \stdClass
     {
-        $modificationDate = filemtime($file);
         $currentDate = time();
-        $diff = $currentDate-$modificationDate;
-        $isValid = $diff < $this->expirationTime;
         
-        return $isValid;
+        foreach ($data as $datumName=>$datum) {
+            $diff = $currentDate-$datum->created;
+            $isValid = $diff < $this->expirationTime;
+            
+            if (!$isValid) {
+                unset($data[$datumName]);
+            }
+        }
+        
+        return $data;
     }
     
-    public function save() : void
+    private function save() : void
     {
-        file_put_contents($this->file, json_encode($this->data), LOCK_EX);
+        if (!empty($this->data)) {
+            file_put_contents($this->file, json_encode($this->data), LOCK_EX);
+        }
     }
 }

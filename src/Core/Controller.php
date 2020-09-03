@@ -23,7 +23,7 @@ abstract class Controller
         $response = [];
         
         foreach ($connections as $i=>$connection) {
-            $connectionName = "c" . crc32(json_encode(curl_getinfo($connection))); // add "c" at the beginning because $connectionName must be non-numeric (otherwise array_merge probably return unexpected result)
+            $connectionName = crc32(json_encode(curl_getinfo($connection)));
             $order[$connectionName] = $i;
             $cached = $this->cache->fetch($connectionName);
             
@@ -36,11 +36,14 @@ abstract class Controller
         
         if (!empty($awaiting)) {
             $fromApi = $this->api->executeBatch($awaiting);
-            $retrieved = array_merge($retrieved, $fromApi);
+            
+            foreach ($fromApi as $connectionName=>$datumFromApi) {
+                $this->cache->store($connectionName, $retrievedDatum);
+                $retrieved[$connectionName] = $retrievedDatum;
+            }
         }
         
-        foreach ($retrieved as $connectionName=>$retrievedDatum) {
-            $this->cache->store($connectionName, $retrievedDatum);
+        foreach ($retrieved as $connectionName=>$retrievedDatum) {            
             $index = $order[$connectionName];
             $response[$index] = $retrievedDatum;
         }

@@ -12,7 +12,7 @@ class Main extends CoreController
     {
         $articlesModel = new ArticlesModel($this->api);
         $tagsModel = new TagsModel($this->api);
-        $apiResponses = $this->api->executeBatch([
+        $apiResponses = $this->retrieveData([
             $articlesModel->prepareConnectionToFindAll(),
             $tagsModel->prepareConnectionToFindAll()
         ]);

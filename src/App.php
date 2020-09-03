@@ -16,9 +16,10 @@ class App
             $vars = Core\Router::extractVars($requestPath, $route);
             $authorizationToken = $this->extractAuthorizationToken();
             $api = new Core\ConduitApi($authorizationToken);
+            $cache = new Core\Cache();
             list($controllerName, $action) = $routeMap[$route];
             $controllerFullName = "\RealWorldFrontendPhp\Controller\\{$controllerName}";
-            $controller = new $controllerFullName($api);
+            $controller = new $controllerFullName($api, $cache);
             $contentOrCallable = call_user_func_array([$controller, $action], $vars);
             
             if (is_callable($contentOrCallable)) {

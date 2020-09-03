@@ -83,7 +83,7 @@ final class ConduitApi
             $running > 0
         );
         
-        foreach ($connections as $connection) {
+        foreach ($connections as $i=>$connection) {
             $responseCode = curl_getinfo($connection, CURLINFO_HTTP_CODE);
             
             if ($responseCode < $minHttpErrorCode) {
@@ -96,7 +96,7 @@ final class ConduitApi
             
             $responseBody = curl_multi_getcontent($connection);
             $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
-            $responses[] = $decodedResponse;
+            $responses[$i] = $decodedResponse;
             curl_multi_remove_handle($curl, $connection);
         }
         

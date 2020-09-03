@@ -13,6 +13,15 @@ class Articles extends CoreModel
     
     public function parseFindAllResponse($response, $count=true)
     {
-        return parent::parseFindAllEntriesResponse($response, $count);
+        list($articles, $total) = parent::parseFindAllEntriesResponse($response, $count);
+        $defaultAuthorImage = "https://static.productionready.io/images/smiley-cyrus.jpg";
+        
+        foreach ($articles as &$article) {
+            if (empty($article->author->image)) {
+                $article->author->image = $defaultAuthorImage;
+            }
+        }
+        
+        return [$articles, $total];
     }    
 }

@@ -72,7 +72,7 @@ class Cache
             $isValid = $diff < $this->expirationTime;
             
             if (!$isValid) {
-                unset($data[$datumName]);
+                unset($data->{$datumName});
             }
         }
         

@@ -38,8 +38,8 @@ abstract class Controller
             $fromApi = $this->api->executeBatch($awaiting);
             
             foreach ($fromApi as $connectionName=>$datumFromApi) {
-                $this->cache->store($connectionName, $retrievedDatum);
-                $retrieved[$connectionName] = $retrievedDatum;
+                $this->cache->store($connectionName, $datumFromApi);
+                $retrieved[$connectionName] = $datumFromApi;
             }
         }
         
@@ -49,5 +49,20 @@ abstract class Controller
         }
         
         return $response;
+    }
+    
+    
+    
+    
+    
+    public function redirect($url)
+    {
+        header("Location: {$url}");
+        die();        
+    }
+    
+    public function redirectBack()
+    {
+        return $this->redirect($_SERVER['HTTP_REFERER']);
     }
 }

@@ -64,11 +64,11 @@ class View
     
     
     
-    public function widget(string $name) : string
+    public function widget(string $name, array $args=[]) : string
     {
         $widgetClass = "\RealWorldFrontendPhp\Widget\\{$name}";
         $widget = new $widgetClass();
-        $content = $widget();
+        $content = $widget($args);
         
         return $content;
     }

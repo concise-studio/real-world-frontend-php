@@ -8,19 +8,37 @@
                     <a href="/login">Have an account?</a>
                 </p>
 
-                <ul class="error-messages">
-                    <li>That email is already taken</li>
-                </ul>
+                <?= $this->widget("ErrorMessages", $errorMessages) ?>
 
-                <form>
+                <form action="/do-registration" method="POST">
                     <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="text" placeholder="Your Name">
+                        <input 
+                            name="username" 
+                            class="form-control form-control-lg" 
+                            type="text" 
+                            placeholder="Your Name" 
+                            required
+                            value="<?= $filled['username'] ?: "" ?>"
+                        >
                     </fieldset>
                     <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="text" placeholder="Email">
+                        <input 
+                            name="email" 
+                            class="form-control form-control-lg" 
+                            type="text" 
+                            placeholder="Email" 
+                            required
+                            value="<?= $filled['email'] ?: "" ?>"
+                        >
                     </fieldset>
                     <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="password" placeholder="Password">
+                        <input 
+                            name="password" 
+                            class="form-control form-control-lg" 
+                            type="password" 
+                            placeholder="Password" 
+                            required
+                        >
                     </fieldset>
                     <button class="btn btn-lg btn-primary pull-xs-right">
                         Sign up

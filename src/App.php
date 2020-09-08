@@ -8,13 +8,14 @@ class App
     {
         $this->transformPhpErrorsToExceptions();
         $this->registerAutoload();
+        $this->initSession();
         
         try {
             $routeMap = $this->getRouteMap();
             $requestPath = Core\Request::getPath();
             $route = Core\Router::defineRoute($requestPath, array_keys($routeMap));
             $vars = Core\Router::extractVars($requestPath, $route);
-            $authorizationToken = $this->extractAuthorizationToken();
+            $authorizationToken = Core\User::getToken();
             $api = new Core\ConduitApi($authorizationToken);
             $cache = new Core\Cache();
             list($controllerName, $action) = $routeMap[$route];
@@ -58,6 +59,8 @@ class App
             '/profile/:username'                => ["Profile", "viewProfilePage"],
             '/profile/:username/favorites'      => ["Profile", "viewFavoritesPage"],
             
+            '/do-registration'                  => ["Auth", "doRegistration"],
+            '/do-login'                         => ["Auth", "doLogin"],
             '/blog/delete-article'              => ["Blog", "deleteArticle"],
             '/blog/add-comment-to-article'      => ["Blog", "addCommentToArticle"],
             '/blog/delete-comment-from-article' => ["Blog", "deleteCommentFromArticle"],
@@ -94,9 +97,11 @@ class App
             throw new \ErrorException($message, 0, $severity, $file, $line);
         });    
     }
-       
-    private function extractAuthorizationToken() : ?string
+    
+    private function initSession()
     {
-        return null;
+        if (!session_id()) {
+            session_start();
+        }
     }
 }

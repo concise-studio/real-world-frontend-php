@@ -2,19 +2,20 @@
 
 namespace RealWorldFrontendPhp\Core;
 
-final class User
+class User
 {    
-    private static $isInitialized = false;
-    private static $payload;
+    protected static $sessionKey = "_user";
+    protected static $isInitialized = false;
+    protected static $data;
 
     
     
-
+    
     
     public static function isGuest() : bool
     {
         User::init();
-        $isGuest = empty(User::$payload);
+        $isGuest = empty(User::$data);
         
         return $isGuest;
     }
@@ -26,18 +27,60 @@ final class User
         return !User::isGuest();
     }
     
-    public static function getUsername() : string
+    public static function getToken() : ?string
     {
         User::init();
         
-        return User::$payload['username'];
+        return User::isAuthorized() ? User::$data['token'] : null;
     }
     
-    public static function getAvatar() : string 
+    public static function getUsername() : ?string
     {
         User::init();
         
-        return User::$payload['avatar'];
+        return User::$data['username']  ?? null;
+    }
+    
+    public static function getEmail() : ?string
+    {
+        User::init();
+        
+        return User::$data['email']  ?? null;
+    }
+    
+    public static function getImage() : ?string 
+    {
+        User::init();
+        
+        return User::$data['image'] ?? null;
+    }
+    
+    public static function getAvatar() : ?string 
+    {        
+        return User::getImage();
+    }
+    
+    public static function getBio() : ?string
+    {
+        return User::$data['bio'] ?? null;
+    }
+    
+    public static function set(array $data) : void
+    {
+        $required = [
+            "token",
+            "username",
+            "email"
+        ];
+        
+        foreach ($required as $field) {
+            if (!array_key_exists($field, $data)) {
+                throw new \InvalidArgumentException ("Array 'data' must contains field {$field}");
+            }
+        }
+        
+        User::$data = $data;
+        User::save();
     }
     
     
@@ -47,19 +90,13 @@ final class User
     private static function init() : void
     {
         if (!User::$isInitialized) {
-            $token = User::extractAuthorizationToken();
-            
-            if (!empty($token)) {
-                $payload = JWT::decode($token); // TODO: Use https://github.com/firebase/php-jwt
-                User::$payload = $payload;
-            }
-            
+            User::$data = Session::get(User::$sessionKey, []);
             User::$isInitialized = true;
         }
     }
     
-    private static function extractAuthorizationToken() : ?string
+    private static function save() : void
     {
-        return null; // TODO: implement it
+        Session::set(User::$sessionKey, User::$data);
     }
 }

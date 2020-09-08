@@ -26,7 +26,7 @@ final class ConduitApi
         $connection = $this->prepareConnection($method, $endpoint, $queryStringVars, $bodyVars);
         $response = $this->executeBatch([$connection])[0];
         
-        return $responses; 
+        return $response; 
     }
     
     public function prepareConnection(string $method, string $endpoint, array $queryStringVars=[], array $bodyVars = [])
@@ -41,8 +41,8 @@ final class ConduitApi
             $url = "{$url}?{$queryString}";    
         }
         
-        if (in_array($method, ["PUT", "POST"])) {            
-            curl_setopt($connection, CURLOPT_POSTFIELDS, http_build_query($params));
+        if (in_array($method, ["PUT", "POST"])) {      
+            curl_setopt($connection, CURLOPT_POSTFIELDS, json_encode($bodyVars));
         } 
         
         if ($method === "POST") {
@@ -65,7 +65,7 @@ final class ConduitApi
         return $connection;
     }
     
-    public function executeBatch(array $connections)
+    public function executeBatch(array $connections) : array
     {
         $minHttpErrorCode = 100;
         $successfulResponseCodes = [200, 201];
@@ -85,16 +85,26 @@ final class ConduitApi
         
         foreach ($connections as $i=>$connection) {
             $responseCode = curl_getinfo($connection, CURLINFO_HTTP_CODE);
+            $responseBody = curl_multi_getcontent($connection);
             
             if ($responseCode < $minHttpErrorCode) {
                 throw new \RuntimeException("Server did not respond in timeout");
             }
             
             if (!in_array($responseCode, $successfulResponseCodes)) {
-                throw new \RuntimeException("Server responded with error. Code: {$responseCode}", $responseCode);
+                $errorMessage = "Server responded with error. Code: {$responseCode}. Body: {$responseBody}";
+                
+                if ($responseCode == 422) {
+                    $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
+                    $e = new AppException($errorMessage);
+                    $errors = $this->extractErrors($decodedResponse);
+                    $e->setErrors($errors);
+                    throw $e;
+                }
+                
+                throw new \RuntimeException("Server responded with error. Code: {$responseCode}. Body: {$responseBody}", $responseCode);
             }
             
-            $responseBody = curl_multi_getcontent($connection);
             $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
             $responses[$i] = $decodedResponse;
             curl_multi_remove_handle($curl, $connection);
@@ -103,5 +113,22 @@ final class ConduitApi
         curl_multi_close($curl);
         
         return $responses;
+    }
+    
+    
+    
+    
+    
+    protected function extractErrors(\stdClass $response) : array
+    {
+        $errors = [];
+        
+        foreach ($response->errors as $field=>$messages) {
+            foreach ($messages as $message) {
+                $errors[] = "{$field} {$message}";
+            }
+        }
+        
+        return $errors;
     }
 }

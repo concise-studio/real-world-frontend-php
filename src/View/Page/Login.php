@@ -8,16 +8,27 @@
                     <a href="/register">Need an account?</a>
                 </p>
 
-                <ul class="error-messages">
-                    <li>Password is incorrect</li>
-                </ul>
+                <?= $this->widget("ErrorMessages", $errorMessages) ?>
 
-                <form>
+                <form method="POST" action="do-login">
                     <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="text" placeholder="Email">
+                        <input 
+                            name="email" 
+                            class="form-control form-control-lg" 
+                            type="text" 
+                            placeholder="Email"
+                            required
+                            value="<?= $filled['email'] ?: "" ?>"
+                        >
                     </fieldset>
                     <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="password" placeholder="Password">
+                        <input 
+                            name="password" 
+                            class="form-control form-control-lg" 
+                            type="password" 
+                            placeholder="Password"
+                            required
+                        >
                     </fieldset>
                     <button class="btn btn-lg btn-primary pull-xs-right">
                         Sign in

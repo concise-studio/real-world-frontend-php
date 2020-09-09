@@ -24,13 +24,9 @@ class View
     
     
     
-    public function render(string $view, ?array $vars=null, string $viewPath=null, bool $useLayout=false)
+    public function render(string $view, array $vars=[], string $viewPath=null, bool $useLayout=false)
     {
-        if (is_null($vars)) {
-            $vars = $this->getVars();
-        }
-        
-        $this->setVars($vars);        
+        $this->addVars($vars);        
         $viewPath = (is_null($viewPath) ? $this->viewPath : $viewPath);
         $rendered = "";
         
@@ -67,7 +63,21 @@ class View
     public function widget(string $name, array $args=[]) : string
     {
         $widgetClass = "\RealWorldFrontendPhp\Widget\\{$name}";
-        $widget = new $widgetClass();
+        
+        if (is_subclass_of($widgetClass, "\RealWorldFrontendPhp\Core\GlobalWidget")) {
+            $required = ["request", "session"];
+
+            foreach ($required as $requiredVar) {
+                if (!array_key_exists($requiredVar, $this->vars)) {
+                    throw new \BadMethodCallException("Var {$requiredVar} must be set to render widget {$name}");
+                }
+            }
+            
+            $widget = new $widgetClass($this->vars['request'], $this->vars['session']);
+        } else {
+            $widget = new $widgetClass();
+        }
+        
         $content = $widget($args);
         
         return $content;

@@ -7,21 +7,23 @@ use \RealWorldFrontendPhp\Core\Model as CoreModel;
 
 class Auth extends CoreModel
 {
-    public function register(string $username, string $email, string $password) : void
+    public function register(string $username, string $email, string $password) : User
     {
         $info = compact("username", "email", "password");
         $response = $this->api->execute("post", "users", [], ['user'=>$info]);
         $userData = (array)$response->user; 
+        $user = User::fromArray($userData);
         
-        User::set($userData);
+        return $user;
     }
     
-    public function login(string $email, string $password) : void
+    public function login(string $email, string $password) : User
     {
         $credentials = compact("email", "password");
         $response = $this->api->execute("post", "users/login", [], ['user'=>$credentials]);
         $userData = (array)$response->user; 
-
-        User::set($userData);
+        $user = User::fromArray($userData);
+        
+        return $user;
     }
 }

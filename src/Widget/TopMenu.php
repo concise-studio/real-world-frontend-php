@@ -2,12 +2,10 @@
 
 namespace RealWorldFrontendPhp\Widget;
 
-use \RealWorldFrontendPhp\Core\Request as Request;
-use \RealWorldFrontendPhp\Core\User as User;
 use \RealWorldFrontendPhp\Core\Router as Router;
-use \RealWorldFrontendPhp\Core\Widget as CoreWidget;
+use \RealWorldFrontendPhp\Core\GlobalWidget as CoreGlobalWidget;
 
-class TopMenu extends CoreWidget
+class TopMenu extends CoreGlobalWidget
 {
     public function __invoke()
     {
@@ -18,7 +16,8 @@ class TopMenu extends CoreWidget
     
     protected function getItems()
     {
-        $items = User::isGuest() ? $this->getGuestItems() : $this->getAuthorizedItems();
+        $user = $this->session->getUser();
+        $items = $user->isGuest() ? $this->getGuestItems() : $this->getAuthorizedItems();
         $items = $this->setActiveItem($items);
     
         return $items;
@@ -35,8 +34,9 @@ class TopMenu extends CoreWidget
     
     protected function getAuthorizedItems()
     {
-        $username = User::getUsername();
-        $avatar = User::getAvatar();
+        $user = $this->session->getUser();
+        $username = $user->getUsername();
+        $avatar = $user->getAvatar();
         $profileLink = "/profile/{$username}"; 
         
         return [
@@ -49,7 +49,7 @@ class TopMenu extends CoreWidget
     
     protected function setActiveItem(array $items)
     {
-        $uri = Request::getUri();
+        $uri = $this->request->getUri();
         $links = array_column($items, "link");
         $activeLink = Router::defineRoute($uri, $links);
         

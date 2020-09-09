@@ -5,31 +5,25 @@ namespace RealWorldFrontendPhp;
 class App
 {
     public function run() 
-    {
+    {        
         $this->transformPhpErrorsToExceptions();
         $this->registerAutoload();
-        $this->initSession();
         
         try {
             $routeMap = $this->getRouteMap();
-            $requestPath = Core\Request::getPath();
+            $request = new Core\Request($_SERVER['REQUEST_URI'], $_POST);            
+            $requestPath = $request->getPath();
             $route = Core\Router::defineRoute($requestPath, array_keys($routeMap));
             $vars = Core\Router::extractVars($requestPath, $route);
-            $authorizationToken = Core\User::getToken();
+            $session = new Core\Session();
+            $authorizationToken = $session->getUser()->getToken();
             $api = new Core\ConduitApi($authorizationToken);
             $cache = new Core\Cache();
             list($controllerName, $action) = $routeMap[$route];
-            $controllerFullName = "\RealWorldFrontendPhp\Controller\\{$controllerName}";
-            $controller = new $controllerFullName($api, $cache);
-            $contentOrCallable = call_user_func_array([$controller, $action], $vars);
+            $controller = new $controllerName($request, $session, $api, $cache);
+            $content = call_user_func_array([$controller, $action], $vars);
             
-            if (is_callable($contentOrCallable)) {
-                $callable = $contentOrCallable;
-                $callable();
-            } else {
-                $content = $contentOrCallable;
-                echo $content;
-            }
+            echo $content;
         } catch (\Throwable $e) {
             $exceptionInfo = [
                 "Exception", 
@@ -41,6 +35,7 @@ class App
             echo implode(nl2br(PHP_EOL), $exceptionInfo);
         }
     }
+
     
     
     
@@ -66,8 +61,13 @@ class App
             '/blog/delete-comment-from-article' => ["Blog", "deleteCommentFromArticle"],
             '/profile/save-settings'            => ["Profile", "saveSettings"]
         ];
-                   
         
+        $map = array_map(function($executable) { 
+            $executable[0] = "\RealWorldFrontendPhp\Controller\\{$executable[0]}";
+            
+            return $executable;
+        }, $map);
+                   
         return $map;
     }
     
@@ -96,12 +96,5 @@ class App
         set_error_handler(function($severity, $message, $file, $line) { 
             throw new \ErrorException($message, 0, $severity, $file, $line);
         });    
-    }
-    
-    private function initSession()
-    {
-        if (!session_id()) {
-            session_start();
-        }
     }
 }

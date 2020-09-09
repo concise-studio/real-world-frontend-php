@@ -5,6 +5,10 @@ namespace RealWorldFrontendPhp\Core;
 abstract class Widget
 {
     protected $view;
+
+    
+    
+    
     
     public function __construct()
     {

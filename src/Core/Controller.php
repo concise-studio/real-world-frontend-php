@@ -4,16 +4,31 @@ namespace RealWorldFrontendPhp\Core;
 
 abstract class Controller
 {    
-    protected $view;
+    protected $request;
+    protected $session;
     protected $api;
     protected $cache;
     
-    public function __construct(ConduitApi $api, Cache $cache)
+    protected $view;
+
+
+
+
+    
+    public function __construct(Request $request, Session $session, ConduitApi $api, Cache $cache) 
     {
-        $this->view = new View();
-        $this->api = $api;
+        $this->request = $request;
+        $this->session = $session;
+        $this->api = $api;        
         $this->cache = $cache;
+        
+        $this->view = new View();
+        $this->view->addVars(compact("request", "session"));
     }
+    
+    
+    
+    
     
     public function retrieveData(array $connections)
     {

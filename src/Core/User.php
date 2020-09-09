@@ -3,100 +3,111 @@
 namespace RealWorldFrontendPhp\Core;
 
 class User
-{    
-    protected static $sessionKey = "_user";
-    protected static $isInitialized = false;
-    protected static $data;
-
+{   
+    protected $token;
+    protected $username;
+    protected $email;
+    protected $image;
+    protected $bio;
     
     
     
     
-    public static function isGuest() : bool
-    {
-        User::init();
-        $isGuest = empty(User::$data);
-        
-        return $isGuest;
-    }
     
-    public static function isAuthorized() : bool
-    {
-        User::init();
-        
-        return !User::isGuest();
-    }
-    
-    public static function getToken() : ?string
-    {
-        User::init();
-        
-        return User::isAuthorized() ? User::$data['token'] : null;
-    }
-    
-    public static function getUsername() : ?string
-    {
-        User::init();
-        
-        return User::$data['username']  ?? null;
-    }
-    
-    public static function getEmail() : ?string
-    {
-        User::init();
-        
-        return User::$data['email']  ?? null;
-    }
-    
-    public static function getImage() : ?string 
-    {
-        User::init();
-        
-        return User::$data['image'] ?? null;
-    }
-    
-    public static function getAvatar() : ?string 
-    {        
-        return User::getImage();
-    }
-    
-    public static function getBio() : ?string
-    {
-        return User::$data['bio'] ?? null;
-    }
-    
-    public static function set(array $data) : void
-    {
-        $required = [
-            "token",
-            "username",
-            "email"
-        ];
-        
-        foreach ($required as $field) {
-            if (!array_key_exists($field, $data)) {
-                throw new \InvalidArgumentException ("Array 'data' must contains field {$field}");
+    public function __construct(
+        ?string $token = null, 
+        ?string $username = null, 
+        ?string $email = null, 
+        ?string $image = null, 
+        ?string $bio = null
+    ) {
+        if (!empty($token)) {
+            if (empty($username)) {
+                throw new \InvalidArgumentException("username must be specified if token specified");
+            }
+            
+            if (empty($email)) {
+                throw new \InvalidArgumentException("email must be specified if token specified");
             }
         }
         
-        User::$data = $data;
-        User::save();
+        $this->token = $token;
+        $this->username = $username;
+        $this->email = $email;
+        $this->image = $image;
+        $this->bio = $bio;
     }
     
-    
-    
-    
-    
-    private static function init() : void
+    public static function fromArray(array $data) : User
     {
-        if (!User::$isInitialized) {
-            User::$data = Session::get(User::$sessionKey, []);
-            User::$isInitialized = true;
+        if (
+            array_key_exists("token", $data) &&
+            array_key_exists("username", $data) &&
+            array_key_exists("email", $data)
+        ) {
+            $token = (string)$data['token'];
+            $username = (string)$data['username'];
+            $email = (string)$data['email'];
+            $image = null;
+            $bio = null;
+            
+            if (array_key_exists("image", $data)) {
+                $image = (string) $data['image'];
+            }
+            
+            if (array_key_exists("bio", $data)) {
+                $bio = (string)$data['bio'];
+            }
+            
+            $user = new User($token, $username, $email, $image, $bio);
+        } else {
+            $user = new User();
         }
+        
+        return $user;        
     }
     
-    private static function save() : void
+    
+    
+    
+    
+    public function isGuest() : bool
     {
-        Session::set(User::$sessionKey, User::$data);
+        return empty($this->token);
+    }
+    
+    public function isAuthorized() : bool
+    {
+        return !$this->isGuest();
+    }
+    
+    public function getToken() : ?string
+    {
+        return $this->token;
+    }
+    
+    public function getUsername() : ?string
+    {
+        return $this->username;
+    }
+    
+    public function getEmail() : ?string
+    {
+        return $this->email;
+    }
+    
+    public function getImage() : ?string 
+    {
+        return $this->image;
+    }
+    
+    public function getBio() : ?string
+    {
+        return $this->bio;
+    }
+    
+    public function getAvatar() : ?string 
+    {        
+        return $this->getImage();
     }
 }

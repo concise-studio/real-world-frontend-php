@@ -4,78 +4,72 @@ namespace RealWorldFrontendPhp\Core;
 
 class Request
 {
-    public static function getUri(string $default = "/") : string
+    protected $uri;
+    protected $body;
+    
+    
+    
+    
+    
+    public function __construct(string $uri, array $body=[])
     {
-        return $_SERVER['REQUEST_URI'];        
+        $this->uri = $uri;
+        $this->body = $body;
+    }
+
+    
+    
+    
+    
+    public function getUri() : string
+    {
+        return $this->uri;       
     }
     
-    public static function getPath() : string
+    public function getPath() : string
     {
-        $uri = Request::getUri();
-        list($path, ) = explode("?", $uri);
+        list($path, ) = explode("?", $this->getUri());
         
         return $path; 
     }
     
-    public static function getQueryString() : ?string
+    public function getQueryString() : ?string
     {
-        $uri = Request::getUri();
-        $uriParts = explode("?", $uri);
+        $uriParts = explode("?", $this->getUri());
         $queryString = $uriParts[1] ?? null;
         
         return $queryString;    
     }
     
-    public static function getQueryStringVars()
+    public function getQueryStringVars()
     {
-        $queryString = Request::getQueryString();
+        $queryString = $this->getQueryString();
         parse_str($queryString, $vars);
         
         return $vars;
     }
     
-    public static function getBodyVars()
+    public function getBodyVars()
     {
-        $vars = $_POST;
-         
-        return $vars;
+        return $this->body;
     }
     
-    public static function getVar(array $source, string $name, $default=null)
+
+    
+    
+    
+    public function getBodyVar(string $name, $default=null)
     {
-        $value = array_key_exists($name, $source) ? $source[$name] : $default;
+        $bodyVars = $this->getBodyVars();
+        $value = array_key_exists($name, $bodyVars) ? $bodyVars[$name] : $default;
         
         return $value;
     }
     
-    public static function getBodyVar(string $name, $default=null)
+    public function getQueryStringVar(string $name, $default=null)
     {
-        $source = Request::getBodyVars();
-        $value = Request::getVar($source, $name, $default);
-        
-        return $value;
-    }
-    
-    public static function getSanitizedVar(array $source, string $name, $default=null)
-    {
-        $value = Request::getVar($source, $name, $default);
-        $value = Ancillary::sanitize($value);
-        
-        return $value;
-    }
-    
-    public static function getSanitizedQueryStringVar(string $name, $default=null) 
-    {
-        $source = Request::getQueryStringVars();
-        $value = Request::getSanitizedVar($source, $name, $default);
-        
-        return $value;
-    }
-    
-    public static function getSanitizedBodyVar(string $name, $default=null) 
-    {
-        $source = Request::getBodyVars();
-        $value = Request::getSanitizedVar($source, $name, $default);
+        $queryStringVars = $this->getQueryStringVars();
+        $value = array_key_exists($name, $queryStringVars) ? $queryStringVars[$name] : $default;
         
         return $value;
     }

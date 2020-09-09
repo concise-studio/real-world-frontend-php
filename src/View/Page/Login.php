@@ -18,7 +18,7 @@
                             type="text" 
                             placeholder="Email"
                             required
-                            value="<?= $filled['email'] ?: "" ?>"
+                            value="<?= $filled['email'] ?? "" ?>"
                         >
                     </fieldset>
                     <fieldset class="form-group">

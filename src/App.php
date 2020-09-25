@@ -4,27 +4,42 @@ namespace RealWorldFrontendPhp;
 
 class App
 {
-    public function run() 
-    {        
+    private $routeMap;
+    
+    
+    
+    
+    
+    public function __construct()
+    {
         $this->transformPhpErrorsToExceptions();
         $this->registerAutoload();
-        
+        $this->initRouteMap();
+    }
+    
+    
+    
+    
+    
+    public function run() 
+    {        
+
         try {
-            $routeMap = $this->getRouteMap();
             $request = new Core\Request($_SERVER['REQUEST_URI'], $_POST);            
             $requestPath = $request->getPath();
-            $route = Core\Router::defineRoute($requestPath, array_keys($routeMap));
+            $route = Core\Router::defineRoute($requestPath, array_keys($this->routeMap));
             $vars = Core\Router::extractVars($requestPath, $route);
             $session = new Core\Session();
             $authorizationToken = $session->getUser()->getToken();
             $api = new Core\ConduitApi($authorizationToken);
             $cache = new Core\Cache();
-            list($controllerName, $action) = $routeMap[$route];
+            list($controllerName, $action) = $this->routeMap[$route];
             $controller = new $controllerName($request, $session, $api, $cache);
             $content = call_user_func_array([$controller, $action], $vars);
             
             echo $content;
         } catch (\Throwable $e) {
+            http_response_code(500);
             $exceptionInfo = [
                 "Exception", 
                 "Message: {$e->getMessage()}",
@@ -35,41 +50,10 @@ class App
             echo implode(nl2br(PHP_EOL), $exceptionInfo);
         }
     }
+    
+    
+    
 
-    
-    
-    
-    
-    
-    private function getRouteMap()
-    {
-        $map = [
-            '/'                                 => ["Main", "mainPage"],
-            '/login'                            => ["Auth", "loginPage"],
-            '/register'                         => ["Auth", "registerPage"],
-            '/settings'                         => ["Profile", "settingsPage"],
-            '/editor'                           => ["Blog", "createArticlePage"],
-            '/editor/:articleSlug'              => ["Blog", "editArticlePage"],
-            '/article/:articleSlug'             => ["Blog", "viewArticlePage"],
-            '/profile/:username'                => ["Profile", "viewProfilePage"],
-            '/profile/:username/favorites'      => ["Profile", "viewFavoritesPage"],
-            
-            '/do-registration'                  => ["Auth", "doRegistration"],
-            '/do-login'                         => ["Auth", "doLogin"],
-            '/blog/delete-article'              => ["Blog", "deleteArticle"],
-            '/blog/add-comment-to-article'      => ["Blog", "addCommentToArticle"],
-            '/blog/delete-comment-from-article' => ["Blog", "deleteCommentFromArticle"],
-            '/profile/save-settings'            => ["Profile", "saveSettings"]
-        ];
-        
-        $map = array_map(function($executable) { 
-            $executable[0] = "\RealWorldFrontendPhp\Controller\\{$executable[0]}";
-            
-            return $executable;
-        }, $map);
-                   
-        return $map;
-    }
     
     private function registerAutoload()
     {
@@ -96,5 +80,10 @@ class App
         set_error_handler(function($severity, $message, $file, $line) { 
             throw new \ErrorException($message, 0, $severity, $file, $line);
         });    
+    }
+    
+    private function initRouteMap()
+    {
+        $this->routeMap = require __DIR__ . "/Routes.php";
     }
 }

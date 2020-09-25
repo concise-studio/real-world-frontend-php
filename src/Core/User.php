@@ -52,7 +52,7 @@ class User
             $bio = null;
             
             if (array_key_exists("image", $data)) {
-                $image = (string) $data['image'];
+                $image = (string)$data['image'];
             }
             
             if (array_key_exists("bio", $data)) {

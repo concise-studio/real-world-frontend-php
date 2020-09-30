@@ -23,13 +23,13 @@ class App
     
     public function run() 
     {        
-
+        $session = new Core\Session();
+                    
         try {
             $request = new Core\Request($_SERVER['REQUEST_URI'], $_POST);            
             $requestPath = $request->getPath();
             $route = Core\Router::defineRoute($requestPath, array_keys($this->routeMap));
             $vars = Core\Router::extractVars($requestPath, $route);
-            $session = new Core\Session();
             $authorizationToken = $session->getUser()->getToken();
             $api = new Core\ConduitApi($authorizationToken);
             $cache = new Core\Cache();
@@ -38,6 +38,10 @@ class App
             $content = call_user_func_array([$controller, $action], $vars);
             
             echo $content;
+        } catch (\RealWorldFrontendPhp\Exception\AuthException $e) {
+            $session->setFlash("errors", [$e->getMessage()]);
+            header("Location: /login");
+            die();    
         } catch (\Throwable $e) {
             http_response_code(500);
             $exceptionInfo = [

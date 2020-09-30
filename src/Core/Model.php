@@ -11,9 +11,17 @@ abstract class Model
         $this->api = $api;
     }
     
-    public function prepareConnectionToFindAllEntries(string $entity, int $limit=20, array $filters=[])
+    public function prepareConnectionToFindAllEntries(string $entity, ?Pagination $pagination=null, array $filters=[])
     {
-        $params = array_merge(compact("limit"), $filters);
+        if (!is_null($pagination)) {
+            $limit = $pagination->perPage();
+            $offset = $pagination->offset();
+        } else {
+            $limit = 20;
+            $offset = 0;
+        }
+        
+        $params = array_merge(compact("limit", "offset"), $filters);
         $connection = $this->api->prepareConnection("get", $entity, $params);
         
         return $connection;

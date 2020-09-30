@@ -3,12 +3,13 @@
 namespace RealWorldFrontendPhp\Model;
 
 use \RealWorldFrontendPhp\Core\Model as CoreModel;
+use \RealWorldFrontendPhp\Core\Pagination as Pagination;
 
 class Articles extends CoreModel
 {
-    public function prepareConnectionToFindAll(int $limit=20, array $filters=[])
+    public function prepareConnectionToFindAll(?Pagination $pagination=null, array $filters=[])
     {
-        return parent::prepareConnectionToFindAllEntries("articles", $limit, $filters);
+        return parent::prepareConnectionToFindAllEntries("articles", $pagination, $filters);
     }
     
     public function parseFindAllResponse($response, $count=true)

@@ -49,9 +49,9 @@ class TopMenu extends CoreGlobalWidget
     
     protected function setActiveItem(array $items)
     {
-        $uri = $this->request->getUri();
+        $path = $this->request->getPath();
         $links = array_column($items, "link");
-        $activeLink = Router::defineRoute($uri, $links);
+        $activeLink = Router::defineRoute($path, $links);
         
         foreach ($items as $item) {
             if ($item->link === $activeLink) {

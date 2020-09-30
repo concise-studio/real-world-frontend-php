@@ -43,6 +43,8 @@
                         </a>
                     </div>
                 <?php } ?>
+                
+                <?= $this->widget("Pagination", $articlesPagination) ?>
             </div>
 
             <div class="col-md-3">

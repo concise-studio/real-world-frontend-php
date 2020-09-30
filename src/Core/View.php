@@ -60,7 +60,7 @@ class View
     
     
     
-    public function widget(string $name, array $args=[]) : string
+    public function widget(string $name, $args=null) : string
     {
         $widgetClass = "\RealWorldFrontendPhp\Widget\\{$name}";
         

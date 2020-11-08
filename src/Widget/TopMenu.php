@@ -43,7 +43,8 @@ class TopMenu extends CoreGlobalWidget
             (object)['link'=>"/", 'title'=>"Home", 'icon'=>null, 'isActive'=>false],
             (object)['link'=>"/editor", 'title'=>"New Post", 'icon'=>"<i class='ion-compose'></i>&nbsp;", 'isActive'=>false],
             (object)['link'=>"/settings", 'title'=>"Settings", 'icon'=>"<i class='ion-gear-a'></i>&nbsp;", 'isActive'=>false],
-            (object)['link'=>$profileLink, 'title'=>$username, 'icon'=>"<img class='user-pic' src='{$avatar}'>&nbsp;", 'isActive'=>false]
+            (object)['link'=>$profileLink, 'title'=>$username, 'icon'=>"<img class='user-pic' src='{$avatar}'>&nbsp;", 'isActive'=>false],
+            (object)['link'=>"/do-logout", 'title'=>"Sign Out", 'icon'=>"<i class='ion-log-out'></i>&nbsp;", 'isActive'=>false]
         ];
     }
     

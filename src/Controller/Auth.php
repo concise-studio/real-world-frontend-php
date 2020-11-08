@@ -2,9 +2,10 @@
 
 namespace RealWorldFrontendPhp\Controller;
 
-use RealWorldFrontendPhp\Core\Controller as CoreController;
-use RealWorldFrontendPhp\Core\AppException as AppException;
-use RealWorldFrontendPhp\Model\Auth as AuthModel;
+use \RealWorldFrontendPhp\Core\Controller as CoreController;
+use \RealWorldFrontendPhp\Core\AppException as AppException;
+use \RealWorldFrontendPhp\Core\User as User;
+use \RealWorldFrontendPhp\Model\Auth as AuthModel;
 
 class Auth extends CoreController
 {
@@ -58,6 +59,13 @@ class Auth extends CoreController
             $this->session->setFlash("filled", $this->request->getBodyVars());
             $this->redirectBack();
         }         
+    }
+    
+    public function doLogout()
+    {
+        $guest = new User();
+        $this->session->setUser($guest);
+        $this->redirectBack();         
     }
     
     

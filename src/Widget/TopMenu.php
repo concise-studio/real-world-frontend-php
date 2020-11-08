@@ -52,13 +52,18 @@ class TopMenu extends CoreGlobalWidget
     {
         $path = $this->request->getPath();
         $links = array_column($items, "link");
-        $activeLink = Router::defineRoute($path, $links);
         
-        foreach ($items as $item) {
-            if ($item->link === $activeLink) {
-                $item->isActive = true;
-                break;
+        try {
+            $activeLink = Router::defineRoute($path, $links);
+            
+            foreach ($items as $item) {
+                if ($item->link === $activeLink) {
+                    $item->isActive = true;
+                    break;
+                }
             }
+        } catch (\LogicException $e) {
+            // do nothing if active there is no active link
         }
         
         return $items;

@@ -4,7 +4,7 @@ namespace RealWorldFrontendPhp\Core;
 
 final class ConduitApi
 {
-    protected $apiUrl = "https://conduit.productionready.io/api/";
+    protected $apiUrl = "https://conduit.productionready.io/api";
     protected $timeout = 5; // seconds
     protected $authorizationToken;
     

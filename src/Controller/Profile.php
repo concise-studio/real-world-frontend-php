@@ -2,10 +2,13 @@
 
 namespace RealWorldFrontendPhp\Controller;
 
-use RealWorldFrontendPhp\Core\Controller as CoreController;
-use RealWorldFrontendPhp\Core\AppException as AppException;
-use RealWorldFrontendPhp\Exception\AuthException;
-use RealWorldFrontendPhp\Model\User as UserModel;
+use \RealWorldFrontendPhp\Core\Controller as CoreController;
+use \RealWorldFrontendPhp\Core\Pagination as Pagination;
+use \RealWorldFrontendPhp\Core\AppException as AppException;
+use \RealWorldFrontendPhp\Exception\AuthException;
+use RealWorldFrontendPhp\Model\Articles as ArticlesModel;
+use \RealWorldFrontendPhp\Model\User as UserModel;
+use \RealWorldFrontendPhp\Model\Profile as ProfileModel;
 
 class Profile extends CoreController
 {
@@ -23,6 +26,29 @@ class Profile extends CoreController
         
         return $this->view->renderPage("Settings", compact("settings", "errorMessages"));
     }
+    
+    public function viewProfilePage(string $username)
+    {
+        $profileModel = new ProfileModel($this->api);
+        $profileConnection = $profileModel->prepareConnectionToFindOne($username);
+        
+        $articlesFeed = $this->request->getQueryStringVar("feed", "author");
+        $articlesPagination = Pagination::fromRequest($this->request);
+        $articlesModel = new ArticlesModel($this->api);
+        $articlesFilters = $this->prepareArticlesFilters($articlesFeed, $username);    
+        $articlesConnection =  $articlesModel->prepareConnectionToFindAll($articlesPagination, $articlesFilters);
+                
+        list($profileResponse, $articlesResponse) = $this->retrieveData([$profileConnection, $articlesConnection]);   
+        $profile = $profileModel->parseFindOneResponse($profileResponse);
+        list($articles, $totalArticles) = $articlesModel->parseFindAllResponse($articlesResponse);
+        $articlesPagination->setTotalEntries($totalArticles);
+        
+        return $this->view->renderPage("Profile", compact("profile", "articlesFeed", "articles", "articlesPagination"));
+    }
+    
+    
+    
+    
     
     public function saveSettings()
     {
@@ -53,5 +79,18 @@ class Profile extends CoreController
         }
         
         return $settings;
+    }
+    
+    private function prepareArticlesFilters(string $feed, string $username)
+    {
+        $filters = [];
+        
+        if ($feed === "author") {
+            $filters['author'] = $username;
+        } else {
+            $filters['favorited'] = $username;
+        }
+        
+        return $filters;
     }
 }

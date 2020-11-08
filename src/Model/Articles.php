@@ -12,6 +12,11 @@ class Articles extends CoreModel
         return parent::prepareConnectionToFindAllEntries("articles", $pagination, $filters);
     }
     
+    public function prepareConnectionToFindAllPersonal(?Pagination $pagination=null)
+    {
+        return parent::prepareConnectionToFindAllEntries("articles/feed", $pagination);
+    }
+    
     public function parseFindAllResponse($response, $count=true)
     {
         list($articles, $total) = parent::parseFindAllEntriesResponse($response, $count);

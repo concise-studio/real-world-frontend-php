@@ -14,16 +14,19 @@ class Main extends CoreController
     {
         $user = $this->session->getUser();
         $articlesFeed = $this->request->getQueryStringVar("feed", "global");
-        $articlesTag = $this->request->getQueryStringVar("tag");
-        $articlesFilters = $this->prepareArticlesFilters($articlesFeed, $articlesTag);
         $articlesPagination = Pagination::fromRequest($this->request);
         $articlesModel = new ArticlesModel($this->api);
         $tagsModel = new TagsModel($this->api);
-        $apiResponses = $this->retrieveData([
-            $articlesModel->prepareConnectionToFindAll($articlesPagination, $articlesFilters),
-            $tagsModel->prepareConnectionToFindAll()
-        ]);
+        $tagsConnection = $tagsModel->prepareConnectionToFindAll();
         
+        if ($articlesFeed === "global") {
+            $articlesFilters = $this->prepareArticlesFilters();        
+            $articlesConnection =  $articlesModel->prepareConnectionToFindAll($articlesPagination, $articlesFilters);
+        } else {
+            $articlesConnection =  $articlesModel->prepareConnectionToFindAllPersonal($articlesPagination);
+        }
+        
+        $apiResponses = $this->retrieveData([$articlesConnection, $tagsConnection]);        
         list($articlesResponse, $tagsResponse) = $apiResponses;
         list($articles, $totalArticles) = $articlesModel->parseFindAllResponse($articlesResponse);
         $tags = $tagsModel->parseFindAllResponse($tagsResponse);
@@ -32,19 +35,14 @@ class Main extends CoreController
         return $this->view->renderPage("Main", compact("user", "articlesFeed", "articles", "articlesPagination", "tags"));
     }
     
-    private function prepareArticlesFilters($feed="global", $tag=null)
+    
+    
+    
+    
+    private function prepareArticlesFilters()
     {
         $filters = [];
-        
-        if ($feed === "personal") {
-            $user = $this->session->getUser();
-            
-            if ($user->isGuest()) {
-                throw new AuthException("User must be authorized to get personal feed");
-            }
-            
-            $filters['favorited'] = $user->getUsername();
-        }
+        $tag = $this->request->getQueryStringVar("tag");
         
         if (!empty($tag)) {
             $filters['tag'] = $tag;

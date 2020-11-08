@@ -1,5 +1,12 @@
 <?php 
 $map = [
+    '/do-registration'                  => ["Auth", "doRegistration"],
+    '/do-login'                         => ["Auth", "doLogin"],
+    '/blog/delete-article'              => ["Blog", "deleteArticle"],
+    '/blog/add-comment-to-article'      => ["Blog", "addCommentToArticle"],
+    '/blog/delete-comment-from-article' => ["Blog", "deleteCommentFromArticle"],
+    '/profile/save-settings'            => ["Profile", "saveSettings"],
+    
     '/'                                 => ["Main", "mainPage"],
     '/login'                            => ["Auth", "loginPage"],
     '/register'                         => ["Auth", "registerPage"],
@@ -8,14 +15,7 @@ $map = [
     '/editor/:articleSlug'              => ["Blog", "editArticlePage"],
     '/article/:articleSlug'             => ["Blog", "viewArticlePage"],
     '/profile/:username'                => ["Profile", "viewProfilePage"],
-    '/profile/:username/favorites'      => ["Profile", "viewFavoritesPage"],
-    
-    '/do-registration'                  => ["Auth", "doRegistration"],
-    '/do-login'                         => ["Auth", "doLogin"],
-    '/blog/delete-article'              => ["Blog", "deleteArticle"],
-    '/blog/add-comment-to-article'      => ["Blog", "addCommentToArticle"],
-    '/blog/delete-comment-from-article' => ["Blog", "deleteCommentFromArticle"],
-    '/profile/save-settings'            => ["Profile", "saveSettings"]
+    '/profile/:username/favorites'      => ["Profile", "viewFavoritesPage"]
 ];
 
 $map = array_map(function($executable) { 

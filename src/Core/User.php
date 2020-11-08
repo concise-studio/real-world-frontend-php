@@ -67,6 +67,17 @@ class User
         return $user;        
     }
     
+    public function asArray() : array
+    {
+        return [
+            'username' => $this->getUsername(),
+            'email' => $this->getEmail(),
+            'image' => $this->getImage(),
+            'bio' => $this->getBio()
+        ];
+    }
+    
+    
     
     
     

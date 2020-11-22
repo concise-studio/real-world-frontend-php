@@ -2,11 +2,11 @@
 
 namespace RealWorldFrontendPhp\Controller;
 
-use RealWorldFrontendPhp\Core\Controller as CoreController;
-use RealWorldFrontendPhp\Core\Pagination as Pagination;
-use RealWorldFrontendPhp\Model\Articles as ArticlesModel;
-use RealWorldFrontendPhp\Model\Tags as TagsModel;
-use RealWorldFrontendPhp\Exception\AuthException;
+use \RealWorldFrontendPhp\Core\Controller as CoreController;
+use \RealWorldFrontendPhp\Core\Pagination as Pagination;
+use \RealWorldFrontendPhp\Model\Articles as ArticlesModel;
+use \RealWorldFrontendPhp\Model\Tags as TagsModel;
+use \RealWorldFrontendPhp\Exception\AuthException;
 
 class Main extends CoreController
 {

@@ -3,6 +3,7 @@ $map = [
     '/do-registration'                  => ["Auth", "doRegistration"],
     '/do-login'                         => ["Auth", "doLogin"],
     '/do-logout'                        => ["Auth", "doLogout"],
+    '/blog/publish-article'             => ["Blog", "publishArticle"],
     '/blog/delete-article'              => ["Blog", "deleteArticle"],
     '/blog/add-comment-to-article'      => ["Blog", "addCommentToArticle"],
     '/blog/delete-comment-from-article' => ["Blog", "deleteCommentFromArticle"],

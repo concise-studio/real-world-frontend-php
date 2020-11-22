@@ -21,7 +21,7 @@ final class ConduitApi
     
     
 
-    public function execute(string $method, string $endpoint, array $queryStringVars=[], array $bodyVars = []) 
+    public function execute(string $method, string $endpoint, array $queryStringVars=[], array $bodyVars=[]) 
     {
         $connection = $this->prepareConnection($method, $endpoint, $queryStringVars, $bodyVars);
         $response = $this->executeBatch([$connection])[0];
@@ -29,7 +29,7 @@ final class ConduitApi
         return $response; 
     }
     
-    public function prepareConnection(string $method, string $endpoint, array $queryStringVars=[], array $bodyVars = [])
+    public function prepareConnection(string $method, string $endpoint, array $queryStringVars=[], array $bodyVars=[])
     {
         $method = strtoupper($method);
         $url = "{$this->apiUrl}/{$endpoint}";

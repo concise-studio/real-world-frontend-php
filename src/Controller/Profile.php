@@ -6,7 +6,7 @@ use \RealWorldFrontendPhp\Core\Controller as CoreController;
 use \RealWorldFrontendPhp\Core\Pagination as Pagination;
 use \RealWorldFrontendPhp\Core\AppException as AppException;
 use \RealWorldFrontendPhp\Exception\AuthException;
-use RealWorldFrontendPhp\Model\Articles as ArticlesModel;
+use \RealWorldFrontendPhp\Model\Articles as ArticlesModel;
 use \RealWorldFrontendPhp\Model\User as UserModel;
 use \RealWorldFrontendPhp\Model\Profile as ProfileModel;
 

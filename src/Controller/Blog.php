@@ -73,6 +73,19 @@ class Blog extends CoreController
         $this->redirect($redirectTo);
     }
     
+    public function deleteArticle(string $slug)
+    {
+        try {
+            $articlesModel = new ArticlesModel($this->api);    
+            $articlesModel->delete($slug);  
+        } catch (AppException $e) {
+            $this->session->setFlash("errors", $e->getErrors()); 
+        }        
+        
+        $redirectTo = $this->request->getQueryStringVar("redirectTo", "/");
+        $this->redirect($redirectTo);
+    }
+    
     
     
     

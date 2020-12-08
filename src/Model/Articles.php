@@ -57,6 +57,17 @@ class Articles extends CoreModel
         return $response->article;
     }
     
+    public function delete(string $slug)
+    {
+        try {
+            $this->api->execute("delete", "articles/{$slug}");
+        } catch (\RuntimeException $e) {
+            if ($e->getCode() !== 404) { // ignore Error 404, method actually works correct in case of that error code 
+                throw $e;
+            }
+        }
+    }
+    
     
     
     

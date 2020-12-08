@@ -18,11 +18,14 @@
             Edit Artcile
         </a>
         &nbsp;
-        <button class="btn btn-sm btn-outline-danger">
+        <a 
+            href="/blog/delete-article/<?= $article->slug ?>?redirectTo=<?= urlencode("/profile/{$article->author->username}") ?>" 
+            class="btn btn-sm btn-outline-danger"
+        >
             <i class="ion-trash-a"></i>
             &nbsp;
             Delete Article
-        </button>       
+        </a>       
     <?php } else { ?>
         <button class="btn btn-sm btn-outline-secondary">
             <i class="ion-plus-round"></i>

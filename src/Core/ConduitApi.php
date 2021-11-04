@@ -57,6 +57,7 @@ final class ConduitApi
             $headers[] = "Authorization: Token {$this->authorizationToken}";
         }
         
+        curl_setopt($connection, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($connection, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($connection, CURLOPT_URL, $url);
         curl_setopt($connection, CURLOPT_HTTPHEADER, $headers);

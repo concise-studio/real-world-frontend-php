@@ -95,7 +95,7 @@ final class ConduitApi
             if (!in_array($responseCode, $successfulResponseCodes)) {
                 $errorMessage = "Server responded with error. Code: {$responseCode}. Body: {$responseBody}";
                 
-                if ($responseCode == 422) {
+                if (in_array($responseCode, [403, 422])) {
                     $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
                     $e = new AppException($errorMessage);
                     $errors = $this->extractErrors($decodedResponse);

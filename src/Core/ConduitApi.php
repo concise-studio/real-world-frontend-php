@@ -106,7 +106,13 @@ final class ConduitApi
                 throw new \RuntimeException("Server responded with error. Code: {$responseCode}. Body: {$responseBody}", $responseCode);
             }
             
-            $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
+            try {
+                $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                error_log("Response body was not JSON-encoded, Error: {$e->getMessage()}. Body: " . $responseBody);
+                $decodedResponse = null;
+            }
+            
             $responses[$i] = $decodedResponse;
             curl_multi_remove_handle($curl, $connection);
         }

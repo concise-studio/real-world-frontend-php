@@ -21,9 +21,9 @@ class Main extends CoreController
         
         if ($articlesFeed === "global") {
             $articlesFilters = $this->prepareArticlesFilters();        
-            $articlesConnection =  $articlesModel->prepareConnectionToFindAll($articlesPagination, $articlesFilters);
+            $articlesConnection = $articlesModel->prepareConnectionToFindAll($articlesPagination, $articlesFilters);
         } else {
-            $articlesConnection =  $articlesModel->prepareConnectionToFindAllPersonal($articlesPagination);
+            $articlesConnection = $articlesModel->prepareConnectionToFindAllPersonal($articlesPagination);
         }
         
         $apiResponses = $this->retrieveData([$articlesConnection, $tagsConnection]);        

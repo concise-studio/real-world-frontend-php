@@ -4,7 +4,7 @@ namespace RealWorldFrontendPhp\Core;
 
 final class ConduitApi
 {
-    protected $apiUrl = "https://conduit.productionready.io/api";
+    protected $apiUrl = "https://api.realworld.io/api";
     protected $timeout = 5; // seconds
     protected $authorizationToken;
     
@@ -69,7 +69,7 @@ final class ConduitApi
     public function executeBatch(array $connections) : array
     {
         $minHttpErrorCode = 100;
-        $successfulResponseCodes = [200, 201];
+        $successfulResponseCodes = [200, 201, 204];
         $curl = curl_multi_init();
         $responses = [];
         

@@ -2,6 +2,8 @@
     <div class="container page">
         <div class="row">
             <div class="col-md-10 offset-md-1 col-xs-12">
+                <?= $this->widget("ErrorMessages", $errorMessages) ?>
+                
                 <form method="POST" action="/blog/publish-article">
                     <?php if (!empty($article->slug)) { ?>
                         <input type="hidden" name="slug" value="<?= $article->slug ?>">
@@ -15,6 +17,7 @@
                                 class="form-control form-control-lg" 
                                 placeholder="Article Title"
                                 value="<?= $article->title ?? null ?>"
+                                required
                             >
                         </fieldset>
                         <fieldset class="form-group">
@@ -24,6 +27,7 @@
                                 class="form-control" 
                                 placeholder="What's this article about?"
                                 value="<?= $article->description ?? null ?>"
+                                required
                             >
                         </fieldset>
                         <fieldset class="form-group">
@@ -32,6 +36,7 @@
                                 class="form-control" 
                                 rows="8"
                                 placeholder="Write your article (in markdown)"
+                                required
                             ><?= $article->body ?? null ?></textarea>
                         </fieldset>
                         <fieldset class="form-group">
@@ -42,6 +47,7 @@
                                     class="form-control" 
                                     placeholder="Enter tags"
                                     value="<?= !empty($article->tagList) ? implode(" ", $article->tagList) : null ?>"
+                                    required
                                 >
                             <?php } elseif (!empty($article->tagList)) { ?>                             
                                 <div class="tag-list">

@@ -3,6 +3,7 @@
 namespace RealWorldFrontendPhp\Controller;
 
 use \RealWorldFrontendPhp\Core\Controller as CoreController;
+use \RealWorldFrontendPhp\Core\AppException;
 use \RealWorldFrontendPhp\Exception\AuthException;
 use \RealWorldFrontendPhp\Model\Articles as ArticlesModel;
 
@@ -11,17 +12,21 @@ class Blog extends CoreController
     public function createArticlePage()
     {
         $user = $this->session->getUser();
+        $article = (object)$this->session->getFlash("filled");
+        $errorMessages = $this->session->getFlash("errors", []);   
 
         if ($user->isGuest()) {
             throw new AuthException("User must be authorized to create articles");
         }
         
-        return $this->view->renderPage("Editor", []);
+        return $this->view->renderPage("Editor", compact("errorMessages", "article"));
     }
     
     public function editArticlePage(string $articleSlug)
     {
         $user = $this->session->getUser();
+        $filled = $this->session->getFlash("filled");
+        $errorMessages = $this->session->getFlash("errors", []);   
 
         if ($user->isGuest()) {
             throw new AuthException("User must be authorized to edit articles");
@@ -36,7 +41,11 @@ class Blog extends CoreController
             throw new AuthException("User must be an article's author to edit it");
         }
         
-        return $this->view->renderPage("Editor", compact("article"));
+        if (!empty($filled)) {
+            $article = (object)array_merge((array)$article, (array)$filled);
+        }
+        
+        return $this->view->renderPage("Editor", compact("article", "errorMessages", "filled"));
     }
     
     public function viewArticlePage(string $articleSlug)
@@ -64,13 +73,12 @@ class Blog extends CoreController
                 ? $articlesModel->create($articleData) 
                 : $articlesModel->update($articleData)
             );
+            $this->redirect("/article/{$article->slug}");
         } catch (AppException $e) {
             $this->session->setFlash("errors", $e->getErrors());
-            $this->session->setFlash("filled", (object)$articleData);       
-        }        
-        
-        $redirectTo = !empty($article->slug) ? "/article/{$article->slug}" : "/";
-        $this->redirect($redirectTo);
+            $this->session->setFlash("filled", (object)$articleData);
+            $this->redirectBack();
+        }
     }
     
     public function deleteArticle(string $slug)

@@ -56,7 +56,7 @@ class Router
         return $definedRoute;        
     }
     
-    public static function extractVars(string $path, string $route, $asAssoc=false)
+    public static function extractVars(string $path, string $route, bool $asAssoc=false)
     {
         $vars = [];
                 

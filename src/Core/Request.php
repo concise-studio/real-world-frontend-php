@@ -36,7 +36,7 @@ class Request
     public function getQueryString() : ?string
     {
         $uriParts = explode("?", $this->getUri());
-        $queryString = $uriParts[1] ?? null;
+        $queryString = $uriParts[1] ?? "";
         
         return $queryString;    
     }

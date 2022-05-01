@@ -73,6 +73,7 @@ class Blog extends CoreController
                 ? $articlesModel->create($articleData) 
                 : $articlesModel->update($articleData)
             );
+            $this->cache->clear();
             $this->redirect("/article/{$article->slug}");
         } catch (AppException $e) {
             $this->session->setFlash("errors", $e->getErrors());
@@ -86,12 +87,51 @@ class Blog extends CoreController
         try {
             $articlesModel = new ArticlesModel($this->api);    
             $articlesModel->delete($slug);  
+            $this->cache->clear();
         } catch (AppException $e) {
             $this->session->setFlash("errors", $e->getErrors()); 
         }        
         
         $redirectTo = $this->request->getQueryStringVar("redirectTo", "/");
         $this->redirect($redirectTo);
+    }
+    
+    public function favoriteArticle(string $slug)
+    {
+        $user = $this->session->getUser();
+        
+        if ($user->isGuest()) {
+            throw new AuthException("User must be authorized to favorite articles");
+        }
+        
+        try {
+            $articlesModel = new ArticlesModel($this->api);
+            $articlesModel->favorite($slug);
+            $this->cache->clear();
+        } catch (AppException $e) {
+            $this->session->setFlash("errors", $e->getErrors()); 
+        }
+        
+        $this->redirectBack();
+    }
+    
+    public function unfavoriteArticle(string $slug)
+    {
+        $user = $this->session->getUser();
+        
+        if ($user->isGuest()) {
+            throw new AuthException("User must be authorized to unfavorite articles");
+        }
+        
+        try {
+            $articlesModel = new ArticlesModel($this->api);
+            $articlesModel->unfavorite($slug);
+            $this->cache->clear();
+        } catch (AppException $e) {
+            $this->session->setFlash("errors", $e->getErrors()); 
+        }
+        
+        $this->redirectBack();
     }
     
     

@@ -49,6 +49,11 @@ class Cache
         }
     }
     
+    public function clear() 
+    {
+        $this->data = new \stdClass;
+    }
+    
 
 
 

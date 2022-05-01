@@ -7,8 +7,7 @@ abstract class Controller
     protected $request;
     protected $session;
     protected $api;
-    protected $cache;
-    
+    protected $cache;    
     protected $view;
 
 
@@ -32,13 +31,14 @@ abstract class Controller
     
     public function retrieveData(array $connections)
     {
+        $user = $this->session->getUser();
         $order = [];
         $retrieved = [];
         $awaiting = [];
         $response = [];
         
         foreach ($connections as $i=>$connection) {
-            $connectionName = crc32(json_encode(curl_getinfo($connection)));
+            $connectionName = md5($user->getToken() . json_encode(curl_getinfo($connection)));
             $order[$connectionName] = $i;
             $cached = $this->cache->fetch($connectionName);
             

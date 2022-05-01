@@ -12,10 +12,16 @@
                         <?= $article->author->username ?>
                     </a>
                     <span class="date"><?= date("F j, Y", strtotime($article->createdAt)) ?></span>
-                </div>
-                <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                    <i class="ion-heart"></i> <?= $article->favoritesCount ?>
-                </button>
+                </div>                
+                <?php if (!$article->favorited) { ?>
+                    <a href="/blog/favorite-article/<?= $article->slug ?>" class="btn btn-sm btn-outline-primary">
+                        <i class="ion-heart"></i> <?= $article->favoritesCount ?>
+                    </a>
+                <?php } else { ?>
+                    <a href="/blog/unfavorite-article/<?= $article->slug ?>" class="btn btn-sm btn-primary">
+                        <i class="ion-heart"></i> <?= $article->favoritesCount ?>
+                    </a>
+                <?php } ?>
             </div>
             <a href="/article/<?= $article->slug ?>" class="preview-link">                            
                 <h1><?= $article->title ?></h1>

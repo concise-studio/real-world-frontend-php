@@ -68,6 +68,16 @@ class Articles extends CoreModel
         }
     }
     
+    public function favorite(string $slug)
+    {
+        $this->api->execute("post", "articles/{$slug}/favorite");
+    }
+    
+    public function unfavorite(string $slug)
+    {
+        $this->api->execute("delete", "articles/{$slug}/favorite");
+    }
+    
     
     
     

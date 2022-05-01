@@ -31,12 +31,26 @@
             <i class="ion-plus-round"></i>
             &nbsp;
             Follow <?= $article->author->username ?>
-        </button>
+        </button>    
         &nbsp;
-        <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
-            &nbsp;
-            Favorite Post <span class="counter">(<?= $article->favoritesCount ?>)</span>
-        </button>
+        <?php if (!$article->favorited) { ?>
+            <a 
+                href="/blog/favorite-article/<?= $article->slug ?>" 
+                class="btn btn-sm btn-outline-primary"
+            >
+                <i class="ion-heart"></i>
+                &nbsp;
+                Favorite Post <span class="counter">(<?= $article->favoritesCount ?>)</span>
+            </a>
+        <?php } else { ?>
+            <a 
+                href="/blog/unfavorite-article/<?= $article->slug ?>" 
+                class="btn btn-sm btn-primary"
+            >
+                <i class="ion-heart"></i>
+                &nbsp;
+                Unfavorite Post <span class="counter">(<?= $article->favoritesCount ?>)</span>
+            </a>
+        <?php } ?>
     <?php } ?>
 </div>

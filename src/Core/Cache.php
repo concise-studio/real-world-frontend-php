@@ -64,7 +64,10 @@ class Cache
         
         if (file_exists($this->file)) {
             $loaded = json_decode(file_get_contents($this->file));
-            $this->data = $this->removeExpiredItems($loaded);
+            $this->data = !empty($loaded) 
+                ? $this->removeExpiredItems($loaded)
+                : new \stdClass
+            ;
         }
     }
     

@@ -107,7 +107,7 @@ final class ConduitApi
             }
             
             try {
-                $decodedResponse = json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
+                $decodedResponse = empty($responseBody) ? null : json_decode($responseBody, $assoc=false, $depth=512, JSON_THROW_ON_ERROR);
             } catch (\JsonException $e) {
                 error_log("Response body was not JSON-encoded, Error: {$e->getMessage()}. Body: " . $responseBody);
                 $decodedResponse = null;
